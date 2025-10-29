@@ -6,22 +6,45 @@ import {
   deleteContactById,
 } from '../services/contacts.js';
 
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 import createHttpError from 'http-errors';
 
-export const getContactController = async (req, res, next) => {
+export const getContactsController = async (req, res, next) => {
   try {
-    const contacts = await getAllContacts();
+    const { page, perPage } = parsePaginationParams(req.query);
+    const { sortBy, sortOrder } = parseSortParams(req.query);
+    const { contactType, isFavourite } = parseFilterParams(req.query);
+
+    const result = await getAllContacts({
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+      contactType,
+      isFavourite,
+    });
+
     res.status(200).json({
       status: 200,
       message: 'Successfully found contacts!',
-      data: contacts,
+      data: result.data,
+      pagination: {
+        page: result.page,
+        perPage: result.perPage,
+        totalItems: result.totalItems,
+        totalPages: result.totalPages,
+        hasNextPage: result.hasNextPage,
+        hasPreviousPage: result.hasPreviousPage,
+      },
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const getContactsByIdController = async (req, res, next) => {
+export const getContactByIdController = async (req, res, next) => {
   try {
     const { contactId } = req.params;
     const contact = await getContactById(contactId);
