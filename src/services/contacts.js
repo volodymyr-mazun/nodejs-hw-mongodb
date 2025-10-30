@@ -54,7 +54,7 @@ export const getContactById = async (contactId) => {
 
 export const createContact = async (payload) => {
   const doc = await ContactsCollection.create(payload);
-  return doc.toObject(); // повертаємо простий об'єкт без Mongoose-методів
+  return doc.toObject();
 };
 
 export const updateContactById = async (contactId, payload, options = {}) => {
@@ -62,8 +62,8 @@ export const updateContactById = async (contactId, payload, options = {}) => {
     contactId,
     payload,
     {
-      new: true, // повернути оновлений документ
-      runValidators: true, // ганяємо валідацію схеми
+      new: true,
+      runValidators: true,
       ...options,
     },
   ).lean();
