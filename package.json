@@ -2,7 +2,6 @@
   "name": "nodejs-hw-mongodb",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "lint": "eslint src/**/*.js",
@@ -25,7 +24,8 @@
     "eslint": "^9.38.0",
     "globals": "^16.4.0",
     "nodemon": "^3.1.10",
-    "pino-pretty": "^13.1.2"
+    "pino-pretty": "^13.1.2",
+    "prettier": "^3.6.2"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -34,7 +34,6 @@
     "http-errors": "^2.0.0",
     "joi": "^18.0.1",
     "mongoose": "^8.19.2",
-    "pino-http": "^11.0.0",
-    "prettier": "^3.6.2"
+    "pino-http": "^11.0.0"
   }
 }
