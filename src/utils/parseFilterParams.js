@@ -1,7 +1,6 @@
 const parseType = (type) => {
   const isString = typeof type === 'string';
   if (!isString) return;
-
   const allowedTypes = ['work', 'home', 'personal'];
   const normalized = type.toLowerCase();
 
@@ -21,10 +20,8 @@ const parseIsFavourite = (value) => {
 
 export const parseFilterParams = (query) => {
   const { type, isFavourite } = query;
-
   const parsedType = parseType(type);
   const parsedIsFavourite = parseIsFavourite(isFavourite);
-
   const filter = {};
 
   if (parsedType) {
