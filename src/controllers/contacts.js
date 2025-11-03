@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import {
   getAllContacts,
   getContactById,
@@ -9,7 +10,9 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
-import createHttpError from 'http-errors';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -45,6 +48,7 @@ export const getContactsController = async (req, res) => {
 export const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
   const userId = req.user?._id;
+
   const contact = await getContactById(contactId, userId);
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
@@ -59,9 +63,19 @@ export const getContactByIdController = async (req, res) => {
 
 export const createContactController = async (req, res) => {
   const userId = req.user?._id;
+
+  let photoUrl;
+  if (req.file) {
+    const useCloud = getEnvVar('ENABLE_CLOUDINARY') === 'true';
+    photoUrl = useCloud
+      ? await saveFileToCloudinary(req.file)
+      : await saveFileToUploadDir(req.file);
+  }
+
   const created = await createContact({
     ...req.body,
-    ...(userId ? { userId } : {}),
+    ...(photoUrl ? { photo: photoUrl } : {}),
+    userId,
   });
 
   res.status(201).json({
@@ -74,7 +88,18 @@ export const createContactController = async (req, res) => {
 export const updateContactController = async (req, res) => {
   const { contactId } = req.params;
   const userId = req.user?._id;
-  const updated = await updateContactById(contactId, req.body, userId);
+
+  const updatePayload = { ...req.body };
+
+  if (req.file) {
+    const useCloud = getEnvVar('ENABLE_CLOUDINARY') === 'true';
+    const photoUrl = useCloud
+      ? await saveFileToCloudinary(req.file)
+      : await saveFileToUploadDir(req.file);
+    updatePayload.photo = photoUrl;
+  }
+
+  const updated = await updateContactById(contactId, updatePayload, userId);
   if (!updated) {
     throw createHttpError(404, 'Contact not found');
   }
@@ -89,6 +114,7 @@ export const updateContactController = async (req, res) => {
 export const deleteContactController = async (req, res) => {
   const { contactId } = req.params;
   const userId = req.user?._id;
+
   const removed = await deleteContactById(contactId, userId);
   if (!removed) {
     throw createHttpError(404, 'Contact not found');

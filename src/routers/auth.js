@@ -8,9 +8,16 @@ import {
   loginUserController,
   logoutUserController,
   refreshUserSessionController,
+  sendResetEmailController,
+  resetPasswordController,
 } from '../controllers/auth.js';
 
-import { registerUserSchema, loginUserSchema } from '../validation/auth.js';
+import {
+  registerUserSchema,
+  loginUserSchema,
+  requestResetEmailSchema,
+  resetPasswordSchema,
+} from '../validation/auth.js';
 
 const router = Router();
 
@@ -33,5 +40,19 @@ router.post('/logout', authenticate, ctrlWrapper(logoutUserController));
 
 // ---- Оновлення сесії ----
 router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+
+// ---- Надіслати лист для відновлення ----
+router.post(
+  '/send-reset-email',
+  validateBody(requestResetEmailSchema),
+  ctrlWrapper(sendResetEmailController),
+);
+
+// ---- Скинути пароль ----
+router.post(
+  '/reset-pwd',
+  validateBody(resetPasswordSchema),
+  ctrlWrapper(resetPasswordController),
+);
 
 export default router;
