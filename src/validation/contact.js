@@ -20,7 +20,7 @@ export const contactSchema = Joi.object({
   email,
   isFavourite,
   contactType: contactType.required(),
-  userId: objectId.required(),
+  userId: objectId.optional(),
 });
 
 export const updateContactSchema = Joi.object({
