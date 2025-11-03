@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import { ContactsCollection } from '../db/models/contacts.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 import { SORT_ORDER } from '../constants/index.js';
@@ -12,7 +13,7 @@ export const getAllContacts = async ({
   userId,
 }) => {
   if (!userId) {
-    throw new Error('userId is required to list contacts');
+    throw createHttpError(401, 'Unauthorized: userId is required');
   }
 
   const safePage = Math.max(1, Number.isFinite(+page) ? +page : 1);
@@ -50,13 +51,18 @@ export const getAllContacts = async ({
 };
 
 export const getContactById = async (contactId, userId) => {
-  if (!userId) throw new Error('userId is required');
-  return ContactsCollection.findOne({ _id: contactId, userId }).lean();
+  if (!userId) throw createHttpError(401, 'Unauthorized');
+  const contact = await ContactsCollection.findOne({
+    _id: contactId,
+    userId,
+  }).lean();
+  if (!contact) throw createHttpError(404, 'Contact not found');
+  return contact;
 };
 
 export const createContact = async (payload) => {
   if (!payload.userId) {
-    throw new Error('userId must be provided by controller, not by client');
+    throw createHttpError(401, 'Unauthorized: missing userId');
   }
   const doc = await ContactsCollection.create(payload);
   return doc.toObject();
@@ -68,15 +74,22 @@ export const updateContactById = async (
   userId,
   options = {},
 ) => {
-  if (!userId) throw new Error('userId is required');
-  return ContactsCollection.findOneAndUpdate(
+  if (!userId) throw createHttpError(401, 'Unauthorized');
+  const updated = await ContactsCollection.findOneAndUpdate(
     { _id: contactId, userId },
     payload,
     { new: true, runValidators: true, ...options },
   ).lean();
+  if (!updated) throw createHttpError(404, 'Contact not found');
+  return updated;
 };
 
 export const deleteContactById = async (contactId, userId) => {
-  if (!userId) throw new Error('userId is required');
-  return ContactsCollection.findOneAndDelete({ _id: contactId, userId }).lean();
+  if (!userId) throw createHttpError(401, 'Unauthorized');
+  const deleted = await ContactsCollection.findOneAndDelete({
+    _id: contactId,
+    userId,
+  }).lean();
+  if (!deleted) throw createHttpError(404, 'Contact not found');
+  return deleted;
 };
