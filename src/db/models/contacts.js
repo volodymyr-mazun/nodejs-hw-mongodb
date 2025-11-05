@@ -18,6 +18,7 @@ const contactsSchema = new Schema(
       required: true,
       index: true,
     },
+    photo: { type: String },
   },
   {
     timestamps: true,
