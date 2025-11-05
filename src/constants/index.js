@@ -14,3 +14,4 @@ export const ROLES = {
 };
 
 export const TEMP_UPLOAD_DIR = path.resolve('tmp');
+export const UPLOAD_DIR = path.resolve('uploads');
