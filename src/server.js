@@ -6,11 +6,10 @@ import cookieParser from 'cookie-parser';
 
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-import { UPLOAD_DIR } from './constants/index.js';
 
 const PORT = process.env.PORT || 3000;
 
-export const setupServer = async () => {
+export const setupServer = () => {
   const app = express();
 
   app.use(cors());
@@ -30,7 +29,6 @@ export const setupServer = async () => {
     }),
   );
 
-  app.use('/uploads', express.static(UPLOAD_DIR));
   app.use(router);
   app.use(notFoundHandler);
   app.use(errorHandler);

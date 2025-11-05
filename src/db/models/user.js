@@ -3,27 +3,16 @@ import { ROLES } from '../../constants/index.js';
 
 const usersSchema = new Schema(
   {
-    name: { type: String, required: true, trim: true },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      index: true,
-    },
-
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: [ROLES.TEACHER, ROLES.PARENT],
-      default: ROLES.PARENT,
+      enum: [ROLES.CONTACT, ROLES.USER],
+      default: ROLES.CONTACT,
     },
   },
-  {
-    timestamps: true,
-    versionKey: false,
-    collection: 'users',
-  },
+  { timestamps: true, versionKey: false },
 );
 
 usersSchema.methods.toJSON = function () {
