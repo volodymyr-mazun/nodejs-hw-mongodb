@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 export const SORT_ORDER = {
   ASC: 'asc',
   DESC: 'desc',
@@ -10,3 +12,5 @@ export const ROLES = {
   CONTACT: 'contact',
   USER: 'user',
 };
+
+export const TEMP_UPLOAD_DIR = path.resolve('tmp');
