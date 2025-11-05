@@ -2,13 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
 import router from './routers/index.js';
+import cookieParser from 'cookie-parser';
+
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
-import cookieParser from 'cookie-parser';
 
 const PORT = process.env.PORT || 3000;
 
-export const setupServer = async () => {
+export const setupServer = () => {
   const app = express();
 
   app.use(cors());
